@@ -53,7 +53,7 @@ type
   pstack_t = ^stack_t;
   stack_t = record
     next: pstack_t;
-    text: PChar;
+    text_data: PChar;
   end;
 
 var
@@ -67,7 +67,7 @@ function PopString(): string;
 procedure PushString(const str: string='');
 function GetUserVariable(const varnum: TVariableList): string;
 procedure SetUserVariable(const varnum: TVariableList; const value: string);
-procedure NSISDialog(const text, caption: string; const buttons: integer);
+procedure NSISDialog(const text_data, caption: string; const buttons: integer);
 
 implementation
 
@@ -85,8 +85,8 @@ var
 begin
   if integer(g_stacktop^) <> 0 then begin
     th := g_stacktop^;
-    Result := PChar(@th.text);
-    g_stacktop^ := th.next;
+ {   Result := PChar(@th.text_data);   TODO }
+ {   g_stacktop^ := th.next;  }
     GlobalFree(HGLOBAL(th));
   end;
 end;
@@ -97,8 +97,8 @@ var
 begin
   if integer(g_stacktop) <> 0 then begin
     th := pstack_t(GlobalAlloc(GPTR, SizeOf(stack_t) + g_stringsize));
-    lstrcpyn(@th.text, PChar(str), g_stringsize);
-    th.next := g_stacktop^;
+ {   lstrcpyn(@th.text_data, PChar(str), g_stringsize);   TODO @ }
+ {   th.next := g_stacktop^; }
     g_stacktop^ := th;
   end;
 end;
@@ -117,9 +117,9 @@ begin
     lstrcpy(g_variables + integer(varnum) * g_stringsize, PChar(value))
 end;
 
-procedure NSISDialog(const text, caption: string; const buttons: integer);
+procedure NSISDialog(const text_data, caption: string; const buttons: integer);
 begin
-  MessageBox(g_hwndParent, PChar(text), PChar(caption), buttons);
+  MessageBox(g_hwndParent, PChar(text_data), PChar(caption), buttons);
 end;
 
 begin
