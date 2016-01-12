@@ -20,17 +20,22 @@ cp -ar /usr/share/fpcsrc/ .
 and there run:
 
 ```
-make all OS_TARGET=win32 CPU_TARGET=i386
-make crossinstall OS_TARGET=win32 CPU_TARGET=i386 
-ln -sf /usr/local/lib/fpc/2.7.1/ppcross386 /usr/bin/ppcross386
+make all OS_TARGET=win32 CPU_TARGET=i386 
+make crossinstall OS_TARGET=win32 CPU_TARGET=i386 # this will give you /usr/local/lib/... with .ppu and also with binary crosscompiler
+ln -sf /usr/local/lib/fpc/2.7.1/ppcross386 /usr/local/bin/ppcross386 # this links the created crosscompiler to more typical location
+make install # this installs the normal compiler (not cross)
 ```
 
-we did it without the `INSTALL_PREFIX=/usr` because we want to install it in /usr/local/
+We did it without the `INSTALL_PREFIX=/usr` because we want to install it in /usr/local/
 and not overwrite the system's packaged fpc version.
+Perhaps you **will need to add to PATH the directory /usr/local/bin/ then (and in build system/IDE add compler flag to look for files like .ppu in that place too)**
+(How ever it seems to work without taking this steps too).
 
 
 After this steps are done, try cross-building example programs provided here in 
 directory `depend/fpc_compiler/example/`
+
+If crosscompilation of the example(s) work too, then you are all set to use FPC crosscompiler (Linux to Windows).
 
 
 See also:
