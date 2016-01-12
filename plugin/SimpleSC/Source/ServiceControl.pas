@@ -196,12 +196,12 @@ begin
     if ServiceHandle > 0 then
       CloseServiceHandle(ServiceHandle)
     else
-      Result := System.GetLastError;
+      Result := GetLastError;
 
     CloseServiceHandle(ManagerHandle);
   end
   else
-    Result := System.GetLastError;
+    Result := GetLastError;
 end;
 
 function StartService(ServiceName: String; ServiceArguments: String; Timeout: Integer): Integer;
@@ -295,20 +295,20 @@ begin
       if WinSvc.StartService(ServiceHandle, NumServiceArgs, ServiceArgVectors[0]) then
         Result := WaitForStatus(ServiceName, SERVICE_RUNNING, Timeout)
       else
-        Result := System.GetLastError;
+        Result := GetLastError;
 
       FreeServiceArguments(ServiceArgVectors);
 
       CloseServiceHandle(ServiceHandle);
     end
     else
-      Result := System.GetLastError;
+      Result := GetLastError;
 
 
     CloseServiceHandle(ManagerHandle);
   end
   else
-    Result := System.GetLastError;
+    Result := GetLastError;
 end;
 
 function StopService(ServiceName: String; WaitForFileRelease: Boolean; Timeout: Integer): Integer;
@@ -359,7 +359,7 @@ begin
           end;
         end
         else
-          Result := System.GetLastError;
+          Result := GetLastError;
       end;
 
       if (ServicesEnumerated and (Result = 0)) or not ServicesEnumerated then
@@ -367,18 +367,18 @@ begin
         if ControlService(ServiceHandle, SERVICE_CONTROL_STOP, ServiceStatus) then
           Result := WaitForStatus(ServiceName, SERVICE_STOPPED, Timeout)
         else
-          Result := System.GetLastError
+          Result := GetLastError
       end;
 
       CloseServiceHandle(ServiceHandle);
     end
     else
-      Result := System.GetLastError;
+      Result := GetLastError;
 
     CloseServiceHandle(ManagerHandle);
   end
   else
-    Result := System.GetLastError;
+    Result := GetLastError;
 
   if (Result = 0) and WaitForFileRelease then
     Result := ServiceControl.WaitForFileRelease(ServiceName, Timeout);
@@ -402,17 +402,17 @@ begin
       if ControlService(ServiceHandle, SERVICE_CONTROL_PAUSE, ServiceStatus) then
         Result := WaitForStatus(ServiceName, SERVICE_PAUSED, Timeout)
       else
-        Result := System.GetLastError;
+        Result := GetLastError;
 
       CloseServiceHandle(ServiceHandle);
     end
     else
-      Result := System.GetLastError;
+      Result := GetLastError;
 
     CloseServiceHandle(ManagerHandle);
   end
   else
-    Result := System.GetLastError;
+    Result := GetLastError;
 end;
 
 function ContinueService(ServiceName: String; Timeout: Integer): Integer;
@@ -433,17 +433,17 @@ begin
       if ControlService(ServiceHandle, SERVICE_CONTROL_CONTINUE, ServiceStatus) then
         Result := WaitForStatus(ServiceName, SERVICE_RUNNING, Timeout)
       else
-        Result := System.GetLastError;
+        Result := GetLastError;
 
       CloseServiceHandle(ServiceHandle);
     end
     else
-      Result := System.GetLastError;
+      Result := GetLastError;
 
     CloseServiceHandle(ManagerHandle);
   end
   else
-    Result := System.GetLastError;
+    Result := GetLastError;
 end;
 
 function GetServiceName(DisplayName: String; var Name: String): Integer;
@@ -464,12 +464,12 @@ begin
     if WinSvc.GetServiceKeyName(ManagerHandle, PChar(DisplayName), ServiceName, ServiceBuffer) then
       Name := ServiceName
     else
-      Result := System.GetLastError;
+      Result := GetLastError;
 
     CloseServiceHandle(ManagerHandle);
   end
   else
-    Result := System.GetLastError;
+    Result := GetLastError;
 end;
 
 function GetServiceDisplayName(ServiceName: String; var Name: String): Integer;
@@ -490,12 +490,12 @@ begin
     if WinSvc.GetServiceDisplayName(ManagerHandle, PChar(ServiceName), DisplayName, ServiceBuffer) then
       Name := DisplayName
     else
-      Result := System.GetLastError;
+      Result := GetLastError;
 
     CloseServiceHandle(ManagerHandle);
   end
   else
-    Result := System.GetLastError;
+    Result := GetLastError;
 end;
 
 function GetServiceStatus(ServiceName: String; var Status: DWORD): Integer;
@@ -517,17 +517,17 @@ begin
       if QueryServiceStatus(ServiceHandle, ServiceStatus) then
         Status := ServiceStatus.dwCurrentState
       else
-        Result := System.GetLastError;
+        Result := GetLastError;
 
       CloseServiceHandle(ServiceHandle);
     end
     else
-      Result := System.GetLastError;
+      Result := GetLastError;
 
     CloseServiceHandle(ManagerHandle);
   end
   else
-    Result := System.GetLastError;
+    Result := GetLastError;
 end;
 
 function GetServiceBinaryPath(ServiceName: String; var BinaryPath: String): Integer;
@@ -549,29 +549,29 @@ begin
     if ServiceHandle > 0 then
     begin
 
-      if not QueryServiceConfig(ServiceHandle, ServiceConfig, 0, BytesNeeded) and (System.GetLastError = ERROR_INSUFFICIENT_BUFFER) then
+      if not QueryServiceConfig(ServiceHandle, ServiceConfig, 0, BytesNeeded) and (GetLastError = ERROR_INSUFFICIENT_BUFFER) then
       begin
         GetMem(ServiceConfig, BytesNeeded);
 
         if QueryServiceConfig(ServiceHandle, ServiceConfig, BytesNeeded, BytesNeeded) then
           BinaryPath := ServiceConfig^.lpBinaryPathName
         else
-          Result := System.GetLastError;
+          Result := GetLastError;
 
         FreeMem(ServiceConfig);
       end
       else
-        Result := System.GetLastError;
+        Result := GetLastError;
 
       CloseServiceHandle(ServiceHandle);
     end
     else
-      Result := System.GetLastError;
+      Result := GetLastError;
 
     CloseServiceHandle(ManagerHandle);
   end
   else
-    Result := System.GetLastError;
+    Result := GetLastError;
 end;
 
 function GetServiceStartType(ServiceName: String; var StartType: DWORD): Integer;
@@ -593,29 +593,29 @@ begin
     if ServiceHandle > 0 then
     begin
 
-      if not QueryServiceConfig(ServiceHandle, ServiceConfig, 0, BytesNeeded) and (System.GetLastError = ERROR_INSUFFICIENT_BUFFER) then
+      if not QueryServiceConfig(ServiceHandle, ServiceConfig, 0, BytesNeeded) and (GetLastError = ERROR_INSUFFICIENT_BUFFER) then
       begin
         GetMem(ServiceConfig, BytesNeeded);
 
         if QueryServiceConfig(ServiceHandle, ServiceConfig, BytesNeeded, BytesNeeded) then
           StartType := ServiceConfig^.dwStartType
         else
-          Result := System.GetLastError;
+          Result := GetLastError;
 
         FreeMem(ServiceConfig);
       end
       else
-        Result := System.GetLastError;
+        Result := GetLastError;
 
       CloseServiceHandle(ServiceHandle);
     end
     else
-      Result := System.GetLastError;
+      Result := GetLastError;
 
     CloseServiceHandle(ManagerHandle);
   end
   else
-    Result := System.GetLastError;
+    Result := GetLastError;
 end;
 
 function GetServiceDescription(ServiceName: String; var Description: String): Integer;
@@ -653,38 +653,38 @@ begin
         if Assigned(@QueryServiceConfig2) then
         begin
 
-          if not QueryServiceConfig2(ServiceHandle, SERVICE_CONFIG_DESCRIPTION, nil, 0, BytesNeeded) and (System.GetLastError = ERROR_INSUFFICIENT_BUFFER) then
+          if not QueryServiceConfig2(ServiceHandle, SERVICE_CONFIG_DESCRIPTION, nil, 0, BytesNeeded) and (GetLastError = ERROR_INSUFFICIENT_BUFFER) then
           begin
             GetMem(ServiceDescription, BytesNeeded);
 
             if QueryServiceConfig2(ServiceHandle, SERVICE_CONFIG_DESCRIPTION, ServiceDescription, BytesNeeded, BytesNeeded) then
               Description := ServiceDescription.lpDescription
             else
-              Result := System.GetLastError;
+              Result := GetLastError;
 
             FreeMem(ServiceDescription);
           end
           else
-            Result := System.GetLastError;
+            Result := GetLastError;
 
         end
         else
-          Result := System.GetLastError;
+          Result := GetLastError;
 
         UnlockServiceDatabase(LockHandle);
       end
       else
-        Result := System.GetLastError;
+        Result := GetLastError;
 
       CloseServiceHandle(ServiceHandle);
     end
     else
-      Result := System.GetLastError;
+      Result := GetLastError;
 
     CloseServiceHandle(ManagerHandle);
   end
   else
-    Result := System.GetLastError;
+    Result := GetLastError;
 end;
 
 function GetServiceLogon(ServiceName: String; var Username: String): Integer;
@@ -706,29 +706,29 @@ begin
     if ServiceHandle > 0 then
     begin
 
-      if not QueryServiceConfig(ServiceHandle, ServiceConfig, 0, BytesNeeded) and (System.GetLastError = ERROR_INSUFFICIENT_BUFFER) then
+      if not QueryServiceConfig(ServiceHandle, ServiceConfig, 0, BytesNeeded) and (GetLastError = ERROR_INSUFFICIENT_BUFFER) then
       begin
         GetMem(ServiceConfig, BytesNeeded);
 
         if QueryServiceConfig(ServiceHandle, ServiceConfig, BytesNeeded, BytesNeeded) then
           Username := ServiceConfig^.lpServiceStartName
         else
-          Result := System.GetLastError;
+          Result := GetLastError;
 
         FreeMem(ServiceConfig);
       end
       else
-        Result := System.GetLastError;
+        Result := GetLastError;
 
       CloseServiceHandle(ServiceHandle);
     end
     else
-      Result := System.GetLastError;
+      Result := GetLastError;
 
     CloseServiceHandle(ManagerHandle);
   end
   else
-    Result := System.GetLastError;
+    Result := GetLastError;
 end;
 
 function GetServiceFailure(ServiceName: String; var ResetPeriod: DWORD;
@@ -780,7 +780,7 @@ begin
         if Assigned(@QueryServiceConfig2) then
         begin
 
-          if not QueryServiceConfig2(ServiceHandle, SERVICE_CONFIG_FAILURE_ACTIONS, nil, 0, BytesNeeded) and (System.GetLastError = ERROR_INSUFFICIENT_BUFFER) then
+          if not QueryServiceConfig2(ServiceHandle, SERVICE_CONFIG_FAILURE_ACTIONS, nil, 0, BytesNeeded) and (GetLastError = ERROR_INSUFFICIENT_BUFFER) then
           begin
             GetMem(ServiceFailureAction, BytesNeeded);
 
@@ -809,31 +809,31 @@ begin
               end;
             end
             else
-              Result := System.GetLastError;
+              Result := GetLastError;
 
             FreeMem(ServiceFailureAction);
           end
           else
-            Result := System.GetLastError;
+            Result := GetLastError;
 
         end
         else
-          Result := System.GetLastError;
+          Result := GetLastError;
 
         UnlockServiceDatabase(LockHandle);
       end
       else
-        Result := System.GetLastError;
+        Result := GetLastError;
 
       CloseServiceHandle(ServiceHandle);
     end
     else
-      Result := System.GetLastError;
+      Result := GetLastError;
 
     CloseServiceHandle(ManagerHandle);
   end
   else
-    Result := System.GetLastError;
+    Result := GetLastError;
 
 end;
 
@@ -875,38 +875,38 @@ begin
         if Assigned(@QueryServiceConfig2) then
         begin
 
-          if not QueryServiceConfig2(ServiceHandle, SERVICE_CONFIG_FAILURE_ACTIONS_FLAG, nil, 0, BytesNeeded) and (System.GetLastError = ERROR_INSUFFICIENT_BUFFER) then
+          if not QueryServiceConfig2(ServiceHandle, SERVICE_CONFIG_FAILURE_ACTIONS_FLAG, nil, 0, BytesNeeded) and (GetLastError = ERROR_INSUFFICIENT_BUFFER) then
           begin
             GetMem(ServiceFailureActionsFlag, BytesNeeded);
 
             if QueryServiceConfig2(ServiceHandle, SERVICE_CONFIG_FAILURE_ACTIONS_FLAG, ServiceFailureActionsFlag, BytesNeeded, BytesNeeded) then
               FailureActionsOnNonCrashFailures := Boolean(ServiceFailureActionsFlag.fFailureActionsOnNonCrashFailures)
             else
-              Result := System.GetLastError;
+              Result := GetLastError;
 
             FreeMem(ServiceFailureActionsFlag);
           end
           else
-            Result := System.GetLastError;
+            Result := GetLastError;
 
         end
         else
-          Result := System.GetLastError;
+          Result := GetLastError;
 
         UnlockServiceDatabase(LockHandle);
       end
       else
-        Result := System.GetLastError;
+        Result := GetLastError;
 
       CloseServiceHandle(ServiceHandle);
     end
     else
-      Result := System.GetLastError;
+      Result := GetLastError;
 
     CloseServiceHandle(ManagerHandle);
   end
   else
-    Result := System.GetLastError;
+    Result := GetLastError;
 
 end;
 
@@ -948,38 +948,38 @@ begin
         if Assigned(@QueryServiceConfig2) then
         begin
 
-          if not QueryServiceConfig2(ServiceHandle, SERVICE_CONFIG_DELAYED_AUTO_START_INFO, nil, 0, BytesNeeded) and (System.GetLastError = ERROR_INSUFFICIENT_BUFFER) then
+          if not QueryServiceConfig2(ServiceHandle, SERVICE_CONFIG_DELAYED_AUTO_START_INFO, nil, 0, BytesNeeded) and (GetLastError = ERROR_INSUFFICIENT_BUFFER) then
           begin
             GetMem(ServiceDelayedAutoStartInfo, BytesNeeded);
 
             if QueryServiceConfig2(ServiceHandle, SERVICE_CONFIG_DELAYED_AUTO_START_INFO, ServiceDelayedAutoStartInfo, BytesNeeded, BytesNeeded) then
               DelayedAutostart := Boolean(ServiceDelayedAutoStartInfo.fDelayedAutostart)
             else
-              Result := System.GetLastError;
+              Result := GetLastError;
 
             FreeMem(ServiceDelayedAutoStartInfo);
           end
           else
-            Result := System.GetLastError;
+            Result := GetLastError;
 
         end
         else
-          Result := System.GetLastError;
+          Result := GetLastError;
 
         UnlockServiceDatabase(LockHandle);
       end
       else
-        Result := System.GetLastError;
+        Result := GetLastError;
 
       CloseServiceHandle(ServiceHandle);
     end
     else
-      Result := System.GetLastError;
+      Result := GetLastError;
 
     CloseServiceHandle(ManagerHandle);
   end
   else
-    Result := System.GetLastError;
+    Result := GetLastError;
 
 end;
     
@@ -1011,25 +1011,25 @@ begin
         if Assigned(@ChangeServiceConfig2) then
         begin
           if not ChangeServiceConfig2(ServiceHandle, SERVICE_CONFIG_DESCRIPTION, @Description) then
-            Result := System.GetLastError;
+            Result := GetLastError;
         end
         else
-          Result := System.GetLastError;
+          Result := GetLastError;
 
         UnlockServiceDatabase(LockHandle);
       end
       else
-        Result := System.GetLastError;
+        Result := GetLastError;
 
       CloseServiceHandle(ServiceHandle);
     end
     else
-      Result := System.GetLastError;
+      Result := GetLastError;
 
     CloseServiceHandle(ManagerHandle);
   end
   else
-    Result := System.GetLastError;
+    Result := GetLastError;
 end;
 
 function SetServiceStartType(ServiceName: String; StartType: DWORD): Integer;
@@ -1053,22 +1053,22 @@ begin
       if LockHandle <> nil then
       begin
         if not ChangeServiceConfig(ServiceHandle, SERVICE_NO_CHANGE, StartType, SERVICE_NO_CHANGE, nil, nil, nil, nil, nil, nil, nil) then
-          Result := System.GetLastError;
+          Result := GetLastError;
 
         UnlockServiceDatabase(LockHandle);
       end
       else
-        Result := System.GetLastError;
+        Result := GetLastError;
 
       CloseServiceHandle(ServiceHandle);
     end
     else
-      Result := System.GetLastError;
+      Result := GetLastError;
 
     CloseServiceHandle(ManagerHandle);
   end
   else
-    Result := System.GetLastError;
+    Result := GetLastError;
 end;
 
 function SetServiceLogon(ServiceName: String; Username: String; Password: String): Integer;
@@ -1095,22 +1095,22 @@ begin
       if LockHandle <> nil then
       begin
         if not ChangeServiceConfig(ServiceHandle, SERVICE_NO_CHANGE, SERVICE_NO_CHANGE, SERVICE_NO_CHANGE, nil, nil, nil, nil, PChar(Username), PChar(Password), nil) then
-          Result := System.GetLastError;
+          Result := GetLastError;
 
         UnlockServiceDatabase(LockHandle);
       end
       else
-        Result := System.GetLastError;
+        Result := GetLastError;
 
       CloseServiceHandle(ServiceHandle);
     end
     else
-      Result := System.GetLastError;
+      Result := GetLastError;
 
     CloseServiceHandle(ManagerHandle);
   end
   else
-    Result := System.GetLastError;
+    Result := GetLastError;
 end;
 
 function SetServiceBinaryPath(ServiceName: String; BinaryPath: String): Integer;
@@ -1134,22 +1134,22 @@ begin
       if LockHandle <> nil then
       begin
         if not ChangeServiceConfig(ServiceHandle, SERVICE_NO_CHANGE, SERVICE_NO_CHANGE, SERVICE_NO_CHANGE, PChar(BinaryPath), nil, nil, nil, nil, nil, nil) then
-          Result := System.GetLastError;
+          Result := GetLastError;
 
         UnlockServiceDatabase(LockHandle);
       end
       else
-        Result := System.GetLastError;
+        Result := GetLastError;
 
       CloseServiceHandle(ServiceHandle);
     end
     else
-      Result := System.GetLastError;
+      Result := GetLastError;
 
     CloseServiceHandle(ManagerHandle);
   end
   else
-    Result := System.GetLastError;
+    Result := GetLastError;
 end;
 
 function SetServiceFailure(ServiceName: String; ResetPeriod: DWORD;
@@ -1221,25 +1221,25 @@ begin
         if Assigned(@ChangeServiceConfig2) then
         begin
           if not ChangeServiceConfig2(ServiceHandle, SERVICE_CONFIG_FAILURE_ACTIONS, @ServiceFailureAction) then
-            Result := System.GetLastError;
+            Result := GetLastError;
         end
         else
-          Result := System.GetLastError;
+          Result := GetLastError;
 
         UnlockServiceDatabase(LockHandle);
       end
       else
-        Result := System.GetLastError;
+        Result := GetLastError;
 
       CloseServiceHandle(ServiceHandle);
     end
     else
-      Result := System.GetLastError;
+      Result := GetLastError;
 
     CloseServiceHandle(ManagerHandle);
   end
   else
-    Result := System.GetLastError;
+    Result := GetLastError;
 
 end;
 
@@ -1280,25 +1280,25 @@ begin
         if Assigned(@ChangeServiceConfig2) then
         begin
           if not ChangeServiceConfig2(ServiceHandle, SERVICE_CONFIG_FAILURE_ACTIONS_FLAG, @ServiceFailureActionsFlag) then
-             Result := System.GetLastError;
+             Result := GetLastError;
         end
         else
-          Result := System.GetLastError;
+          Result := GetLastError;
 
         UnlockServiceDatabase(LockHandle);
       end
       else
-        Result := System.GetLastError;
+        Result := GetLastError;
 
       CloseServiceHandle(ServiceHandle);
     end
     else
-      Result := System.GetLastError;
+      Result := GetLastError;
 
     CloseServiceHandle(ManagerHandle);
   end
   else
-    Result := System.GetLastError;
+    Result := GetLastError;
     
 end;
 
@@ -1339,25 +1339,25 @@ begin
         if Assigned(@ChangeServiceConfig2) then
         begin
           if not ChangeServiceConfig2(ServiceHandle, SERVICE_CONFIG_DELAYED_AUTO_START_INFO, @ServiceDelayedAutoStartInfo) then
-             Result := System.GetLastError;
+             Result := GetLastError;
         end
         else
-          Result := System.GetLastError;
+          Result := GetLastError;
 
         UnlockServiceDatabase(LockHandle);
       end
       else
-        Result := System.GetLastError;
+        Result := GetLastError;
 
       CloseServiceHandle(ServiceHandle);
     end
     else
-      Result := System.GetLastError;
+      Result := GetLastError;
 
     CloseServiceHandle(ManagerHandle);
   end
   else
-    Result := System.GetLastError;
+    Result := GetLastError;
     
 end;
 
@@ -1467,12 +1467,12 @@ begin
     if ServiceHandle <> 0 then
       CloseServiceHandle(ServiceHandle)
     else
-      Result := System.GetLastError;
+      Result := GetLastError;
 
     CloseServiceHandle(ManagerHandle);
   end
   else
-    Result := System.GetLastError;
+    Result := GetLastError;
 end;
 
 function RemoveService(ServiceName: String): Integer;
@@ -1499,22 +1499,22 @@ begin
         Deleted := DeleteService(ServiceHandle);
 
         if not Deleted then
-          Result := System.GetLastError;
+          Result := GetLastError;
 
         UnlockServiceDatabase(LockHandle);
       end
       else
-        Result := System.GetLastError;
+        Result := GetLastError;
 
       CloseServiceHandle(ServiceHandle);
     end
     else
-      Result := System.GetLastError;
+      Result := GetLastError;
 
     CloseServiceHandle(ManagerHandle);
   end
   else
-    Result := System.GetLastError;
+    Result := GetLastError;
 end;
 
 function GetErrorMessage(ErrorCode: Integer): String;
