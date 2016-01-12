@@ -204,6 +204,7 @@ begin
     Result := GetLastError;
 end;
 
+{ our own StartService function }
 function StartService(ServiceName: String; ServiceArguments: String; Timeout: Integer): Integer;
 type
   TArguments = Array of PChar;
@@ -281,7 +282,7 @@ const
         FreeMem(ServiceArgVectors[i]);
   end;
 
-begin
+begin { our own StartService function - body }
   ManagerHandle := OpenSCManager('', nil, SC_MANAGER_CONNECT);
 
   if ManagerHandle > 0 then
@@ -292,7 +293,10 @@ begin
     begin
       GetServiceArguments(ServiceArguments, NumServiceArgs, ServiceArgVectors);
 
-      if StartService(ServiceHandle, NumServiceArgs, ServiceArgVectors[0]) then
+      { if StartService(ServiceHandle, IntToStr(NumServiceArgs), StrToInt(ServiceArgVectors[0])) then }
+
+			{ call the parent/system StartService - as done for example in https://github.com/macek/fpc/blob/master/packages/fcl-extra/src/win/ServiceManager.pas#L702  }
+      if jwawinsvc.StartService(ServiceHandle, NumServiceArgs, ServiceArgVectors[0]) then
         Result := WaitForStatus(ServiceName, SERVICE_RUNNING, Timeout)
       else
         Result := GetLastError;
