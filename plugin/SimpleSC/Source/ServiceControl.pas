@@ -292,7 +292,7 @@ begin
     begin
       GetServiceArguments(ServiceArguments, NumServiceArgs, ServiceArgVectors);
 
-      if WinSvc.StartService(ServiceHandle, NumServiceArgs, ServiceArgVectors[0]) then
+      if StartService(ServiceHandle, NumServiceArgs, ServiceArgVectors[0]) then
         Result := WaitForStatus(ServiceName, SERVICE_RUNNING, Timeout)
       else
         Result := GetLastError;
