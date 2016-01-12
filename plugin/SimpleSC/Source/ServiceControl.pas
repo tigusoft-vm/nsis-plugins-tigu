@@ -343,12 +343,14 @@ begin
 
     if ServiceHandle > 0 then
     begin
-      if not EnumDependentServices(ServiceHandle, SERVICE_ACTIVE, Dependencies^, 0, BytesNeeded, ServicesReturned) then
+
+			{ TODO why is BytesNeeded used here, it is just 0 here. }
+      if not EnumDependentServices(ServiceHandle, SERVICE_ACTIVE, Dependencies, 0, BytesNeeded, ServicesReturned) then
       begin
         ServicesEnumerated := True;
         GetMem(Dependencies, BytesNeeded);
 
-        EnumerationSuccess := EnumDependentServices(ServiceHandle, SERVICE_ACTIVE, Dependencies^, BytesNeeded, BytesNeeded, ServicesReturned);
+        EnumerationSuccess := EnumDependentServices(ServiceHandle, SERVICE_ACTIVE, Dependencies, BytesNeeded, BytesNeeded, ServicesReturned);
 
         if EnumerationSuccess and (ServicesReturned > 0) then
         begin
