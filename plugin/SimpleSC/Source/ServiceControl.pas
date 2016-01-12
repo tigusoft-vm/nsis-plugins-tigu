@@ -1,3 +1,5 @@
+{$H+}
+{ H+ maybe needed for http://wiki.freepascal.org/How_to_use_procedural_variables ? TODO }
 {
 License Agreement
 
@@ -467,7 +469,7 @@ begin
 
   if ManagerHandle > 0 then
   begin
-    if WinSvc.GetServiceKeyName(ManagerHandle, PChar(DisplayName), ServiceName, ServiceBuffer) then
+    if GetServiceKeyName(ManagerHandle, PChar(DisplayName), ServiceName, ServiceBuffer) then
       Name := ServiceName
     else
       Result := GetLastError;
@@ -493,7 +495,8 @@ begin
 
   if ManagerHandle > 0 then
   begin
-    if WinSvc.GetServiceDisplayName(ManagerHandle, PChar(ServiceName), DisplayName, ServiceBuffer) then
+  	{ call the parent system's function: }
+    if jwawinsvc.GetServiceDisplayName(ManagerHandle, PChar(ServiceName), DisplayName, ServiceBuffer) then
       Name := DisplayName
     else
       Result := GetLastError;
@@ -654,7 +657,8 @@ begin
 
       if LockHandle <> nil then
       begin
-        @QueryServiceConfig2 := GetProcAddress(GetModuleHandle(advapi32), 'QueryServiceConfig2A');
+    		{ http://forum.lazarus.freepascal.org/index.php?topic=1148.0 }
+				pointer( QueryServiceConfig2 ) := GetProcAddress(GetModuleHandle(advapi32), 'QueryServiceConfig2A');
 
         if Assigned(@QueryServiceConfig2) then
         begin
@@ -664,7 +668,7 @@ begin
             GetMem(ServiceDescription, BytesNeeded);
 
             if QueryServiceConfig2(ServiceHandle, SERVICE_CONFIG_DESCRIPTION, ServiceDescription, BytesNeeded, BytesNeeded) then
-              Description := ServiceDescription.lpDescription
+              Description := ServiceDescription^.lpDescription
             else
               Result := GetLastError;
 
