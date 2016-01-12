@@ -356,7 +356,7 @@ begin
         begin
           for i := 1 to ServicesReturned do
           begin
-            Result := StopService(Dependencies.lpServiceName, False, Timeout);
+            Result := StopService(Dependencies^.lpServiceName, False, Timeout);
 
             if Result <> 0 then
               Break;
