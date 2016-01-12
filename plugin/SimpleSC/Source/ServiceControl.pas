@@ -27,7 +27,7 @@ unit ServiceControl;
 interface
 
 uses
-  Windows, SysUtils, WinSvc, DateUtils;
+  Windows, SysUtils, (* WinSvc replaced as in http://forum.lazarus.freepascal.org/index.php?topic=1069.0 *) jwawinsvc, DateUtils;
 
   function InstallService(ServiceName, DisplayName: String; ServiceType: DWORD; StartType: DWORD; BinaryPathName: String; Dependencies: String; Username: String; Password: String): Integer;
   function RemoveService(ServiceName: String): Integer;

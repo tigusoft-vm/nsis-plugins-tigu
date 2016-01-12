@@ -28,8 +28,12 @@ make install # this installs the normal compiler (not cross)
 
 We did it without the `INSTALL_PREFIX=/usr` because we want to install it in /usr/local/
 and not overwrite the system's packaged fpc version.
-Perhaps you **will need to add to PATH the directory /usr/local/bin/ then (and in build system/IDE add compler flag to look for files like .ppu in that place too)**
-(How ever it seems to work without taking this steps too).
+
+Usually you **will need to add to PATH the directory /usr/local/bin/ then (and in build system/IDE add compler flag to look for files like .ppu in that place too)**
+
+You also should copy the provided here **fpc.cfg** to your home but with a dot in front:  `cp -i fpc.cfg ~/.fpc.cfg` 
+or create other similar configuration with pointing the compiler to directories like /usr/local/lib/fpc/2.6.4/units/i386-win32/rtl/
+to search for the pascal Units.
 
 
 After this steps are done, try cross-building example programs provided here in 
