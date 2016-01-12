@@ -1,0 +1,6 @@
+windows_drives.pas is taken from http://wiki.lazarus.freepascal.org/Windows_Programming_Tips
+see that page for author/owner/licence information.
+
+We assume that code on the wiki there is public (but we make no guarantees about that either!).
+
+
