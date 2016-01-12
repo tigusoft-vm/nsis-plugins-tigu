@@ -1,5 +1,7 @@
 library SimpleSC;
 
+{$mode objfpc}
+
 uses
   NSIS, Windows, ServiceControl, LSASecurityControl, SysUtils;
 
