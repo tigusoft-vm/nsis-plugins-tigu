@@ -769,6 +769,8 @@ var
   LockHandle: SC_LOCK;
   ServiceFailureAction: PServiceFailureAction;
   BytesNeeded: Cardinal;
+
+  act : LPSC_ACTION;
 begin
   Result := 0;
 
@@ -785,7 +787,7 @@ begin
       if LockHandle <> nil then
       begin
         // Unicode must be used because the ANSI function returns an invalid buffer
-        @QueryServiceConfig2 := GetProcAddress(GetModuleHandle(advapi32), 'QueryServiceConfig2W');
+        pointer( QueryServiceConfig2 ) := GetProcAddress(GetModuleHandle(advapi32), 'QueryServiceConfig2W');
 
         if Assigned(@QueryServiceConfig2) then
         begin
@@ -796,26 +798,32 @@ begin
 
             if QueryServiceConfig2(ServiceHandle, SERVICE_CONFIG_FAILURE_ACTIONS, ServiceFailureAction, BytesNeeded, BytesNeeded) then
             begin
-              ResetPeriod := ServiceFailureAction.dwResetPeriod;
-              RebootMessage := ServiceFailureAction.lpRebootMsg;
-              Command :=ServiceFailureAction.lpCommand;
+              ResetPeriod := ServiceFailureAction^.dwResetPeriod;
+              RebootMessage := ServiceFailureAction^.lpRebootMsg;
+              Command := ServiceFailureAction^.lpCommand;
 
-              if ServiceFailureAction.cActions >= 1 then
+              if ServiceFailureAction^.cActions >= 1 then
               begin
-                Action1 := ServiceFailureAction.lpsaActions[0].aType;
-                ActionDelay1 := ServiceFailureAction.lpsaActions[0].Delay;
+
+                { *** }
+                act := ServiceFailureAction^.lpsaActions;
+                Action1 := act[0].aType; 
+
+
+
+                ActionDelay1 := ServiceFailureAction^.lpsaActions[0].Delay;
               end;
 
               if ServiceFailureAction.cActions >= 2 then
               begin
-                Action2 := ServiceFailureAction.lpsaActions[1].aType;
-                ActionDelay2 := ServiceFailureAction.lpsaActions[1].Delay;
+                Action2 := ServiceFailureAction^.lpsaActions[1].aType;
+                ActionDelay2 := ServiceFailureAction^.lpsaActions[1].Delay;
               end;
 
               if ServiceFailureAction.cActions >= 3 then
               begin
-                Action3 := ServiceFailureAction.lpsaActions[2].aType;
-                ActionDelay3 := ServiceFailureAction.lpsaActions[2].Delay;
+                Action3 := ServiceFailureAction^.lpsaActions[2].aType;
+                ActionDelay3 := ServiceFailureAction^.lpsaActions[2].Delay;
               end;
             end
             else
