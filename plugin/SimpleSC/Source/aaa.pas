@@ -67,28 +67,6 @@ type
 
 
 
-
-function Test(): Integer;
-begin
-	Result := 0;
-	Result := GetLastError;
-end;
-
-
-
-function GrantPrivilege(AccountName: String; PrivilegeName: String): Integer;
-begin
-end;
-function RemovePrivilege(AccountName: String; PrivilegeName: String): Integer;
-begin
-end;
-function EnablePrivilege(PrivilegeName: String): Integer;
-begin
-end;
-function DisablePrivilege(PrivilegeName: String): Integer;
-begin
-end;
-
 function GetAccountSid(const AccountName: String; var Sid: PSID): Integer;
 var
   DomainSize: LongWord;
@@ -116,5 +94,171 @@ begin
   else
     Result := GetLastError;
 end;
+
+function GrantPrivilege(AccountName: String; PrivilegeName: String): Integer;
+const
+  UNICODE_NULL = WCHAR(0);
+  POLICY_CREATE_ACCOUNT = $00000010;
+  POLICY_LOOKUP_NAMES = $00000800;
+var
+  SID: PSID;
+  PolicyHandle: TLSAHandle;
+  LSAPrivilegeName: TLSAUnicodeString;
+  LSAObjectAttributes: TLsaObjectAttributes;
+  pwszPrivilegeName: PWideChar;
+  PrivilegeNameLength: Cardinal;
+  Status: DWORD;
+begin
+  Result := 0;
+
+  GetMem(pwszPrivilegeName, Length(PrivilegeName) * SizeOf(WideChar) + 1);
+  StringToWideChar(PrivilegeName, pwszPrivilegeName, Length(PrivilegeName) * SizeOf(WideChar) + 1);
+  ZeroMemory(@LSAObjectAttributes, SizeOf(TLsaObjectAttributes));
+  PrivilegeNameLength := Length(pwszPrivilegeName);
+
+  if PrivilegeNameLength > 0 then
+  begin
+    Result := GetAccountSid(AccountName, SID);
+
+    if Result = 0 then
+    begin
+      LSAPrivilegeName.Length := PrivilegeNameLength * SizeOf(WideChar);
+      LSAPrivilegeName.MaximumLength := LSAPrivilegeName.Length + SizeOf(UNICODE_NULL);
+      LSAPrivilegeName.Buffer := pwszPrivilegeName;
+
+      Status := LsaOpenPolicy(nil, LSAObjectAttributes, POLICY_LOOKUP_NAMES or POLICY_CREATE_ACCOUNT, PolicyHandle);
+      try
+        if Status = 0 then
+          Result := LsaAddAccountRights(PolicyHandle, Sid, @LSAPrivilegeName, 1)
+        else
+          Result := Status;
+      finally
+        LsaClose(PolicyHandle);
+      end;
+    end;
+
+  end;
+    
+  FreeMem(pwszPrivilegeName);
+end;
+
+function RemovePrivilege(AccountName: String; PrivilegeName: String): Integer;
+const
+  UNICODE_NULL = WCHAR(0);
+  POLICY_CREATE_ACCOUNT = $00000010;
+  POLICY_LOOKUP_NAMES = $00000800;
+var
+  SID: PSID;
+  PolicyHandle: TLSAHandle;
+  LSAPrivilegeName: TLSAUnicodeString;
+  LSAObjectAttributes: TLsaObjectAttributes;
+  pwszPrivilegeName: PWideChar;
+  PrivilegeNameLength: Cardinal;
+  Status: DWORD;
+begin
+  Result := 0;
+
+  GetMem(pwszPrivilegeName, Length(PrivilegeName) * SizeOf(WideChar) + 1);
+  StringToWideChar(PrivilegeName, pwszPrivilegeName, Length(PrivilegeName) * SizeOf(WideChar) + 1);
+  ZeroMemory(@LSAObjectAttributes, SizeOf(TLsaObjectAttributes));
+  PrivilegeNameLength := Length(pwszPrivilegeName);
+
+  if PrivilegeNameLength > 0 then
+  begin
+    Result := GetAccountSid(AccountName, SID);
+
+    if Result = 0 then
+    begin
+      LSAPrivilegeName.Length := PrivilegeNameLength * SizeOf(WideChar);
+      LSAPrivilegeName.MaximumLength := LSAPrivilegeName.Length + SizeOf(UNICODE_NULL);
+      LSAPrivilegeName.Buffer := pwszPrivilegeName;
+
+      Status := LsaOpenPolicy(nil, LSAObjectAttributes, POLICY_LOOKUP_NAMES or POLICY_CREATE_ACCOUNT, PolicyHandle);
+
+      try
+        if Status = 0 then
+          Result := LsaRemoveAccountRights(PolicyHandle, Sid, False, @LSAPrivilegeName, 1)
+        else
+          Result := Status;
+      finally
+        LsaClose(PolicyHandle);
+      end;
+    end;
+
+  end;
+    
+  FreeMem(pwszPrivilegeName);
+end;
+
+function EnablePrivilege(PrivilegeName: String): Integer;
+var
+  TokenHandle: THandle;
+  TokenPrivileges: TOKEN_PRIVILEGES;
+  PreviousState: TOKEN_PRIVILEGES;
+  ReturnLength: Cardinal;
+begin
+  Result := 0;
+
+  if OpenProcessToken(GetCurrentProcess(), TOKEN_ADJUST_PRIVILEGES or TOKEN_QUERY, TokenHandle) then
+  begin
+    try
+
+      if LookupPrivilegeValue(nil, PChar(PrivilegeName), TokenPrivileges.Privileges[0].Luid) then
+      begin
+        TokenPrivileges.PrivilegeCount := 1;
+        TokenPrivileges.Privileges[0].Attributes := SE_PRIVILEGE_ENABLED;
+
+        if not AdjustTokenPrivileges(TokenHandle, False, TokenPrivileges, SizeOf(TokenPrivileges), PreviousState, ReturnLength) then
+          Result := GetLastError;
+      end
+      else
+        Result := GetLastError;
+
+    finally
+      CloseHandle(TokenHandle);
+    end;
+  end
+  else
+    Result := GetLastError;
+
+end;
+
+function DisablePrivilege(PrivilegeName: String): Integer;
+var
+  TokenHandle: THandle;
+  TokenPrivileges: TOKEN_PRIVILEGES;
+  PreviousState: TOKEN_PRIVILEGES;
+  ReturnLength: Cardinal;
+begin
+
+  Result := 0;
+
+  if OpenProcessToken(GetCurrentProcess(), TOKEN_ADJUST_PRIVILEGES or TOKEN_QUERY, TokenHandle) then
+  begin
+    try
+
+      if LookupPrivilegeValue(nil, PChar(PrivilegeName), TokenPrivileges.Privileges[0].Luid) then
+      begin
+        TokenPrivileges.PrivilegeCount := 1;
+        TokenPrivileges.Privileges[0].Attributes := SE_PRIVILEGE_ENABLED;
+
+        if not AdjustTokenPrivileges(TokenHandle, False, TokenPrivileges, SizeOf(TokenPrivileges), PreviousState, ReturnLength) then
+          Result := GetLastError;
+      end
+      else
+        Result := GetLastError;
+
+    finally
+      CloseHandle(TokenHandle);
+    end;
+  end
+  else
+    Result := GetLastError;
+
+end;
+
+end.
+
+
 
 end.
