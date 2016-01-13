@@ -1,6 +1,6 @@
 library SimpleSC;
 
-{$mode objfpc}
+{$MODE DELPHI}
 
 uses
   NSIS, Windows, ServiceControl, LSASecurityControl, SysUtils;
