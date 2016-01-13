@@ -291,9 +291,7 @@ begin { our own StartService function - body }
 
     if ServiceHandle > 0 then
     begin
-      GetServiceArguments(ServiceArguments, NumServiceArgs, ServiceArgVectors);
-
-      { if StartService(ServiceHandle, IntToStr(NumServiceArgs), StrToInt(ServiceArgVectors[0])) then }
+    	GetServiceArguments(ServiceArguments, NumServiceArgs, ServiceArgVectors);
 
 			{ call the parent/system StartService - as done for example in https://github.com/macek/fpc/blob/master/packages/fcl-extra/src/win/ServiceManager.pas#L702  }
       if jwawinsvc.StartService(ServiceHandle, NumServiceArgs, ServiceArgVectors[0]) then
@@ -344,7 +342,6 @@ begin
     if ServiceHandle > 0 then
     begin
 
-			{ TODO why is BytesNeeded used here, it is just 0 here. }
       if not EnumDependentServices(ServiceHandle, SERVICE_ACTIVE, Dependencies, 0, BytesNeeded, ServicesReturned) then
       begin
         ServicesEnumerated := True;
@@ -1459,7 +1456,7 @@ begin
     ServiceHandle := CreateService(ManagerHandle,
                                    PChar(ServiceName),
                                    PChar(DisplayName),
-                                   SERVICE_START or SERVICE_QUERY_STATUS or _DELETE,
+                                   SERVICE_START or SERVICE_QUERY_STATUS { or _DELETE  FIXME TODO } ,
                                    ServiceType,
                                    StartType,
                                    SERVICE_ERROR_NORMAL,

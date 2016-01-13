@@ -207,17 +207,17 @@ begin
         TokenPrivileges.Privileges[0].Attributes := SE_PRIVILEGE_ENABLED;
 
         if not AdjustTokenPrivileges(TokenHandle, False, TokenPrivileges, SizeOf(TokenPrivileges), PreviousState, ReturnLength) then
-          Result := System.GetLastError;
+          Result := GetLastError;
       end
       else
-        Result := System.GetLastError;
+        Result := GetLastError;
 
     finally
       CloseHandle(TokenHandle);
     end;
   end
   else
-    Result := System.GetLastError;
+    Result := GetLastError;
 
 end;
 
@@ -241,17 +241,17 @@ begin
         TokenPrivileges.Privileges[0].Attributes := SE_PRIVILEGE_ENABLED;
 
         if not AdjustTokenPrivileges(TokenHandle, False, TokenPrivileges, SizeOf(TokenPrivileges), PreviousState, ReturnLength) then
-          Result := System.GetLastError;
+          Result := GetLastError;
       end
       else
-        Result := System.GetLastError;
+        Result := GetLastError;
 
     finally
       CloseHandle(TokenHandle);
     end;
   end
   else
-    Result := System.GetLastError;
+    Result := GetLastError;
 
 end;
 
