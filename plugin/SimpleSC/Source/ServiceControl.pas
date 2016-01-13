@@ -467,7 +467,7 @@ begin
 
   if ManagerHandle > 0 then
   begin
-    if WinSvc.GetServiceKeyName(ManagerHandle, PChar(DisplayName), ServiceName, ServiceBuffer) then
+    if jwawinsvc.GetServiceKeyName(ManagerHandle, PChar(DisplayName), ServiceName, ServiceBuffer) then
       Name := ServiceName
     else
       Result := GetLastError;
@@ -493,7 +493,7 @@ begin
 
   if ManagerHandle > 0 then
   begin
-    if WinSvc.GetServiceDisplayName(ManagerHandle, PChar(ServiceName), DisplayName, ServiceBuffer) then
+    if jwawinsvc.GetServiceDisplayName(ManagerHandle, PChar(ServiceName), DisplayName, ServiceBuffer) then
       Name := DisplayName
     else
       Result := GetLastError;
