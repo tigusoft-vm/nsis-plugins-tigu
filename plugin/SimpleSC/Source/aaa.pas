@@ -60,6 +60,13 @@ type
   TLsaObjectAttributes = LSA_OBJECT_ATTRIBUTES;
   PLsaObjectAttributes = ^TLsaObjectAttributes;
 
+  function LsaOpenPolicy(SystemName: PLSAUnicodeString; var ObjectAttributes: TLsaObjectAttributes; DesiredAccess: ACCESS_MASK;  var PolicyHandle: LSA_HANDLE): DWORD; stdcall; external 'advapi32.dll';
+  function LsaAddAccountRights(PolicyHandle: LSA_HANDLE; AccountSid: PSID; UserRights: PLSAUnicodeString; CountOfRights: ULONG): DWORD; stdcall; external 'advapi32.dll';
+  function LsaRemoveAccountRights(PolicyHandle: LSA_HANDLE; AccountSid: PSID; AllRights: Boolean; UserRights: PLSAUnicodeString; CountOfRights: ULONG): DWORD; stdcall; external 'advapi32.dll';
+  function LsaClose(ObjectHandle: LSA_HANDLE): DWORD; stdcall; external 'advapi32.dll';
+
+
+
 
 function Test(): Integer;
 begin
