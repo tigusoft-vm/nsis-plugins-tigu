@@ -30,14 +30,56 @@ uses
   Windows, SysUtils,
   jwawinsvc; { needed for GetLastError ? }
 
-function Test(): Integer;
+  function GrantPrivilege(AccountName: String; PrivilegeName: String): Integer;
+  function RemovePrivilege(AccountName: String; PrivilegeName: String): Integer;
+  function EnablePrivilege(PrivilegeName: String): Integer;
+  function DisablePrivilege(PrivilegeName: String): Integer;
 
 implementation
+
+type
+  LSA_HANDLE = Pointer;
+  TLSAHandle = LSA_HANDLE;
+
+  LSA_UNICODE_STRING = record
+    Length: Word;
+    MaximumLength: Word;
+    Buffer: PWideChar;
+  end;
+  TLSAUnicodeString = LSA_UNICODE_STRING;
+  PLSAUnicodeString = ^TLSAUnicodeString;
+
+  LSA_OBJECT_ATTRIBUTES = record
+    Length: ULONG;
+    RootDirectory: THandle;
+    ObjectName: PLSAUnicodeString;
+    Attributes: ULONG;
+    SecurityDescriptor: Pointer;
+    SecurityQualityOfService: Pointer; 
+  end;
+  TLsaObjectAttributes = LSA_OBJECT_ATTRIBUTES;
+  PLsaObjectAttributes = ^TLsaObjectAttributes;
+
 
 function Test(): Integer;
 begin
 	Result := 0;
 	Result := GetLastError;
+end;
+
+
+
+function GrantPrivilege(AccountName: String; PrivilegeName: String): Integer;
+begin
+end;
+function RemovePrivilege(AccountName: String; PrivilegeName: String): Integer;
+begin
+end;
+function EnablePrivilege(PrivilegeName: String): Integer;
+begin
+end;
+function DisablePrivilege(PrivilegeName: String): Integer;
+begin
 end;
 
 function GetAccountSid(const AccountName: String; var Sid: PSID): Integer;
