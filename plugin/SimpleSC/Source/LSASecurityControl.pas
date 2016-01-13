@@ -27,7 +27,8 @@ unit LSASecurityControl;
 interface
 
 uses
-  Windows, SysUtils;
+  Windows, SysUtils,
+  jwawinsvc; { needed for GetLastError ? }
 
   function GrantPrivilege(AccountName: String; PrivilegeName: String): Integer;
   function RemovePrivilege(AccountName: String; PrivilegeName: String): Integer;

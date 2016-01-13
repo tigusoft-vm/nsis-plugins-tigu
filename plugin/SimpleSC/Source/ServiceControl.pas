@@ -1459,7 +1459,8 @@ begin
     ServiceHandle := CreateService(ManagerHandle,
                                    PChar(ServiceName),
                                    PChar(DisplayName),
-                                   SERVICE_START or SERVICE_QUERY_STATUS or _DELETE,
+                                   SERVICE_START or SERVICE_QUERY_STATUS,
+                                   { or _DELETE,   FIXME XXX }
                                    ServiceType,
                                    StartType,
                                    SERVICE_ERROR_NORMAL,
