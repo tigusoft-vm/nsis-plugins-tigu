@@ -1,0 +1,5 @@
+
+From http://nsis.sourceforge.net/mediawiki/images/6/6c/Shelllink.zip
+
+The file(s) could have other licence(s), read information inside the archive.
+
