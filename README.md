@@ -31,3 +31,5 @@ Then:
 
 # Ready. Now take resulting binary tools to the place that will be building NSIS installer
 
+For support try meshnet.pl IRC and forum including http://h.forum.meshnet.pl/viewtopic.php?f=9&t=41#p126
+
