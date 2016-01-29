@@ -13,10 +13,12 @@ function wget_by_hash() {
 	if [[ "$the_hash" == "$current_hash" ]] ; then
 		echo "The checksum matches (hash of downloaded file: $current_hash)"
 	else
-		echo "The checksum seems invalid! $current_hash was downloaded instead of $the_hash"
+		echo "The checksum seems invalid! $current_hash was downloaded instead of $the_hash - from URL: $the_url"
 		exit 1
 	fi
 }
+
+topdir=$PWD
 
 echo "Cleanup"
 rm -rf ./build/
@@ -39,10 +41,9 @@ cd Contrib/nsJSON/
 i686-w64-mingw32-g++ -c pluginapi.c
 i686-w64-mingw32-ar rcs ansi.lib pluginapi.o
 
-echo -e "\n\nAfter compilation we have:"
+echo -e "\n\nAfter compilation we have:\n\n"
 file ansi.lib || exit 1
 echo -e "\n\n"
-
 )
 
 
@@ -67,29 +68,47 @@ cd v1.2/
 unzip Shelllnk.zip
 ) || exit 1
 
+echo -e "\n\n=== Prebuilt binaries ===\n\n"
+find | grep dll
+echo -e "\n\n"
+
+rm -v -f */*.dll */*/*.dll */*/*/*.dll */*/*/*/*.dll # remove all pre-compiled dll
+echo -e "\nRemoved all prebuilt .dll files\n\n\n"
+
 echo "Copy old ConvFunc.h"
 cp v1.1/Contrib/ShellLink/ConvFunc.h  v1.2/Contrib/ShellLink/
+echo "Copy the API headers for pluginapi_ansi.lib"
+cp -f ./nsis_ansi/Contrib/nsJSON/pluginapi.h  ./v1.2/Contrib/ShellLink/nsis_ansi/
+cp -f ./nsis_ansi/Contrib/nsJSON/nsis_tchar.h ./v1.2/Contrib/ShellLink/nsis_ansi/
 
 echo "Fix include path dir separator"
 sed  -i -e 's/^\(.*\)#include\(.*\)\\\(.*\)$/\1#include\2\/\3/g' v1.2/Contrib/ShellLink/ShellLink.cpp 
 
-echo "Compiling"
-cd v1.1/Contrib/ShellLink/
+echo "Compiling" # ---
+cd v1.2/Contrib/ShellLink/ # <<< finall build dir
 
 i686-w64-mingw32-g++ -c ShellLink.cpp
 
-set -x
 echo "Linking"
+set -x
 cp ../../../nsis_ansi/Contrib/nsJSON/ansi.lib ./pluginapi_ansi.lib
 i686-w64-mingw32-g++ -shared -o ShellLink.dll ShellLink.o -L ./ -lpluginapi_ansi -lole32 -luuid || { 
+	set +x
 	echo "Compilation failed. Launching shell to investigate."
 	echo "*** EXIT this shell when done. ***"
 	bash
 	echo "Debug shell closed, existing with error now."
 	exit 1
 }
+set +x
 
 file ShellLink.dll
 sha256sum ShellLink.dll
+
+cd "$topdir"
+cp ./build/v1.2/Contrib/ShellLink/ShellLink.dll ./build/
+echo -e "\n\nFinall result:\n"
+file ./build/ShellLink.dll
+sha256sum ./build/ShellLink.dll
 
 echo "All seems done and OK"
